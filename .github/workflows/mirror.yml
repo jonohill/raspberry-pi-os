@@ -1,0 +1,27 @@
+name: Check for and mirror release
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '24 23 * * *'
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.9.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Mirror release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pip install poetry
+          poetry install
+          poetry run python3 release.py
